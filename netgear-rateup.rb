@@ -7,6 +7,9 @@ require 'mechanize'
 
 router_ip = ARGV[0]
 interface = ARGV[1]
+#
+# password is MD5 format. you can get MD5 format from packet dump or chrome developer mode
+#
 password = ARGV[2]
 
 backup_file ="/tmp/netgear-rateup-#{router_ip}.html"
