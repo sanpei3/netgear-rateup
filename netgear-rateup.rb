@@ -3,8 +3,7 @@
 # tested Netgear
 #       GS305E V1.0.0.9
 
-require 'mechanize'
-
+require 'date'
 router_ip = ARGV[0]
 interface = ARGV[1]
 #
@@ -14,6 +13,16 @@ password = ARGV[2]
 
 backup_file ="/tmp/netgear-rateup-#{router_ip}.html"
 
+
+html = ""
+if (File.exist?(backup_file) && (DateTime.now.to_time - File.mtime(backup_file)) <= 120)
+  File.open(backup_file, "r:UTF-8") do |body|
+    body.each_line do |oneline|
+      html = html + oneline
+    end
+  end
+else
+require 'mechanize'
 # over write http-cookie routine
 module RespectDoubleQuotedCookieValue
   def self.prepended(klass)
@@ -28,15 +37,6 @@ module RespectDoubleQuotedCookieValue
 end
 
 HTTP::Cookie::Scanner.prepend(RespectDoubleQuotedCookieValue)
-
-html = ""
-if (File.exist?(backup_file) && (DateTime.now.to_time - File.mtime(backup_file)) <= 1)
-  File.open(backup_file, "r:UTF-8") do |body|
-    body.each_line do |oneline|
-      html = html + oneline
-    end
-  end
-else
   agent = Mechanize.new
 
   options =           {
