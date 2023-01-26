@@ -6,9 +6,6 @@
 require 'date'
 router_ip = ARGV[0]
 interface = ARGV[1]
-#
-# password is MD5 format. you can get MD5 format from packet dump or chrome developer mode
-#
 password = ARGV[2]
 
 backup_file ="/tmp/netgear-rateup-#{router_ip}.html"
@@ -22,25 +19,47 @@ if (File.exist?(backup_file) && (DateTime.now.to_time - File.mtime(backup_file))
     end
   end
 else
-require 'mechanize'
-# over write http-cookie routine
-module RespectDoubleQuotedCookieValue
-  def self.prepended(klass)
-    klass.singleton_class.prepend(ClassMethods)
-  end
-
-  module ClassMethods
-    def quote(str)
-       return str
+  require 'mechanize'
+  # over write http-cookie routine
+  module RespectDoubleQuotedCookieValue
+    def self.prepended(klass)
+      klass.singleton_class.prepend(ClassMethods)
+    end
+    module ClassMethods
+      def quote(str)
+        return str
+      end
     end
   end
-end
+  HTTP::Cookie::Scanner.prepend(RespectDoubleQuotedCookieValue)
 
-HTTP::Cookie::Scanner.prepend(RespectDoubleQuotedCookieValue)
   agent = Mechanize.new
+  url = "http://"+router_ip+"/login.cgi"
+  agent.get(url)
+  if (i = agent.page.body.match(/<input type=hidden id='rand' value='([0-9]+)' disabled>/))
+    randStr = i[1]
+  end
+
+  passwdArray = password.split("")
+  randStrArray = randStr.split("")
+  mergedStr = ""
+  i1 = 0
+  i2 = 0
+  while ((i1 < passwdArray.length) || (i2 < randStrArray.length))
+         if (i1 < passwdArray.length)
+           mergedStr += passwdArray[i1]
+           i1 = i1 + 1
+         end
+         if (i2 < randStrArray.length)
+           mergedStr += randStrArray[i2]
+           i2 = i2 + 1
+         end
+  end
+  require 'digest/md5'
+  md5password =  Digest::MD5.hexdigest(mergedStr)
 
   options =           {
-    "password" => password
+    "password" => md5password
   }
   url = "http://"+router_ip+"/login.cgi"
   page = agent.post(url, options)

@@ -1,4 +1,8 @@
 # netgear-rateup
 
+
+CHANGES
+  [2023/1/26]  third argument is changed from MD5 to real password
+
 Limitation
-  After restart the Switch, MD5 will be changed. So it will be update.
+  [SOLVED 2023/1/26] After restart the Switch, MD5 will be changed. So it will be update.
