@@ -6,7 +6,6 @@
 require 'date'
 router_ip = ARGV[0]
 interface = ARGV[1]
-password = ARGV[2]
 
 backup_file ="/tmp/netgear-rateup-#{router_ip}.html"
 
@@ -32,6 +31,10 @@ else
     end
   end
   HTTP::Cookie::Scanner.prepend(RespectDoubleQuotedCookieValue)
+
+  require 'netrc'
+  n = Netrc.read
+  user, password = n[router_ip]
 
   agent = Mechanize.new
   url = "http://"+router_ip+"/login.cgi"
