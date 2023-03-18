@@ -6,7 +6,6 @@
 require 'date'
 router_ip = ARGV[0]
 interface = ARGV[1]
-password = ARGV[2]
 
 backup_file ="/tmp/netgear-rateup-#{router_ip}.html"
 
@@ -19,6 +18,9 @@ if (File.exist?(backup_file) && (DateTime.now.to_time - File.mtime(backup_file))
     end
   end
 else
+  require 'netrc'
+  n = Netrc.read
+  user, password = n[router_ip]
   require 'mechanize'
   # over write http-cookie routine
   module RespectDoubleQuotedCookieValue
