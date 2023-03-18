@@ -2,6 +2,7 @@
 
 
 CHANGES
+  [2023/3/18]  use ~/.netrc for password
   [2023/1/26]  third argument is changed from MD5 to real password
 
 Limitation
